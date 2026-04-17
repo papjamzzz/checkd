@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check'd — AI Launch Copy Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #080a0f; --bg2: #0e1118; --bg3: #141820;
+    --border:  rgba(255,255,255,0.07);
+    --text:    #e8eaf0; --muted: rgba(232,234,240,0.45);
+    --accent:  #00d4ff; --accent2: #7c3aed;
+    --green:   #22c55e; --gold: #f59e0b;
+    --mono:    'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,10,15,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 56px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+  }
+  .logo-text { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .logo-text span { color: var(--accent); }
+  .nav { display: flex; align-items: center; gap: 4px; }
+  .nav a {
+    padding: 6px 14px; border-radius: 7px; font-size: 13px; font-weight: 500;
+    color: var(--muted); text-decoration: none; transition: all 0.2s;
+  }
+  .nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav a.active { color: var(--accent); background: rgba(0,212,255,0.06); }
+  .btn-primary {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; cursor: pointer; text-decoration: none;
+    box-shadow: 0 0 20px rgba(0,212,255,0.2); transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-primary:hover { box-shadow: 0 0 30px rgba(0,212,255,0.4); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── PAGE ── */
+  .page-wrap { max-width: 860px; margin: 0 auto; padding: 52px 32px 100px; }
+
+  .page-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  .page-title { font-size: clamp(30px, 5vw, 50px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 14px; }
+  .page-title span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .page-sub { font-size: 15px; color: var(--muted); margin-bottom: 40px; max-width: 540px; line-height: 1.65; }
+
+  /* ── INPUT PANEL ── */
+  .input-panel {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px; margin-bottom: 32px;
+  }
+  .panel-label { font-family: var(--mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px; }
+
+  /* Tabs */
+  .source-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab-btn {
+    padding: 7px 16px; border-radius: 7px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.06); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Listed product select */
+  select {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; font-size: 14px;
+    color: var(--text); font-family: 'Inter', sans-serif; outline: none;
+    transition: border-color 0.2s; cursor: pointer;
+  }
+  select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.08); }
+  select option { background: var(--bg3); }
+
+  /* Manual inputs */
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-family: var(--mono); }
+  input, textarea {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; font-size: 14px;
+    color: var(--text); font-family: 'Inter', sans-serif; outline: none;
+    transition: border-color 0.2s; autocomplete: off;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.08); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .generate-row { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── PLATFORM CARDS ── */
+  .platforms { display: flex; flex-direction: column; gap: 16px; }
+
+  .platform-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .platform-card.has-content { border-color: rgba(0,212,255,0.15); }
+
+  .platform-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  .platform-left { display: flex; align-items: center; gap: 10px; }
+  .platform-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .platform-name { font-size: 14px; font-weight: 700; }
+  .platform-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .platform-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  .copy-field { display: flex; flex-direction: column; gap: 6px; }
+  .copy-field-label {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .copy-field-text {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+    font-size: 13px; color: rgba(232,234,240,0.85);
+    line-height: 1.6; white-space: pre-wrap; word-break: break-word;
+    min-height: 40px;
+  }
+  .copy-field-text.loading {
+    color: var(--muted); font-style: italic; font-family: var(--mono); font-size: 12px;
+  }
+
+  .copy-btn {
+    padding: 4px 12px; border-radius: 5px; font-size: 11px; font-weight: 600;
+    font-family: var(--mono); background: var(--bg3);
+    border: 1px solid var(--border); color: var(--muted);
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.06); }
+
+  /* Platform accent colors */
+  .ph-icon   { background: rgba(255,99,52,0.15);  }
+  .rdt-icon  { background: rgba(255,69,0,0.15);   }
+  .x-icon    { background: rgba(232,234,240,0.08); }
+  .ih-icon   { background: rgba(0,212,255,0.12);  }
+
+  /* Empty state */
+  .empty-platforms {
+    text-align: center; padding: 60px 32px;
+    color: var(--muted); font-size: 14px; line-height: 1.7;
+  }
+  .empty-platforms .big { font-size: 40px; margin-bottom: 16px; }
+
+  /* ── FOOTER ── */
+  .footer { border-top: 1px solid var(--border); padding: 28px 32px; text-align: center; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .page-wrap { padding: 32px 16px 80px; }
+    .topbar { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="/">
+    <div class="logo-mark">✓</div>
+    <span class="logo-text">Check<span>'d</span></span>
+  </a>
+  <nav class="nav">
+    <a href="/products">Products</a>
+    <a href="/launch-copy" class="active">Launch Copy</a>
+    <a href="/guide">Guide</a>
+    <a href="/support">Support</a>
+  </nav>
+  <a class="btn-primary" href="/">+ Submit</a>
+</header>
+
+<div class="page-wrap">
+
+  <div class="page-eyebrow">// ai launch copy generator</div>
+  <h1 class="page-title">Launch copy for <span>every platform.</span><br>One click.</h1>
+  <p class="page-sub">Pick a listed product or paste your own details. Get ready-to-post copy for Product Hunt, Reddit, X, and Indie Hackers — each written for that platform's audience.</p>
+
+  <!-- Input Panel -->
+  <div class="input-panel">
+    <div class="panel-label">// your product</div>
+
+    <div class="source-tabs">
+      <button class="tab-btn active" onclick="switchTab('listed', this)">Listed on Check'd</button>
+      <button class="tab-btn" onclick="switchTab('manual', this)">Enter Manually</button>
+    </div>
+
+    <!-- Listed products tab -->
+    <div class="tab-content active" id="tab-listed">
+      {% if products %}
+      <select id="product-select" onchange="onProductSelect()">
+        <option value="">— Select a listed product —</option>
+        {% for p in products %}
+        <option value="{{ p.id }}" data-name="{{ p.name }}" data-tagline="{{ p.tagline }}" data-desc="{{ p.description }}" data-url="{{ p.url }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+      {% else %}
+      <div style="font-size:14px;color:var(--muted);padding:12px 0">No products listed yet. <a href="/" style="color:var(--accent)">Submit yours first →</a></div>
+      {% endif %}
+    </div>
+
+    <!-- Manual tab -->
+    <div class="tab-content" id="tab-manual">
+      <div class="form-group">
+        <label>Product Name</label>
+        <input type="text" id="m-name" placeholder="e.g. StreamFader" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Tagline</label>
+        <input type="text" id="m-tagline" placeholder="One line — what it does" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="m-description" placeholder="What it does, who it's for, what makes it different."></textarea>
+      </div>
+      <div class="form-group">
+        <label>URL</label>
+        <input type="url" id="m-url" placeholder="https://yourproduct.com" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="generate-row">
+      <button class="btn-primary" id="generate-btn" onclick="generate()">
+        ✦ Generate Launch Copy
+      </button>
+      <span id="gen-status" style="font-size:12px;color:var(--muted);font-family:var(--mono)"></span>
+    </div>
+  </div>
+
+  <!-- Platform output cards -->
+  <div id="platforms-wrap">
+    <div class="empty-platforms">
+      <div class="big">✦</div>
+      Select a product and hit Generate.<br>
+      Copy for all 4 platforms appears here — one click to copy each field.
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <a href="https://creativekonsoles.com">Creative Konsoles</a> &nbsp;·&nbsp;
+  <a href="/guide">Guide</a> &nbsp;·&nbsp;
+  <a href="/support">Support</a>
+</footer>
+
+<script>
+  let activeTab = 'listed';
+
+  function switchTab(tab, btn) {
+    activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  function onProductSelect() {
+    // Clear output when selection changes
+    document.getElementById('platforms-wrap').innerHTML = `
+      <div class="empty-platforms">
+        <div class="big">✦</div>
+        Hit Generate to create launch copy for this product.
+      </div>`;
+  }
+
+  async function generate() {
+    const btn = document.getElementById('generate-btn');
+    const status = document.getElementById('gen-status');
+
+    let payload = {};
+    if (activeTab === 'listed') {
+      const sel = document.getElementById('product-select');
+      if (!sel || !sel.value) { status.textContent = 'Select a product first.'; return; }
+      payload = { product_id: sel.value };
+    } else {
+      const name = document.getElementById('m-name').value.trim();
+      const tagline = document.getElementById('m-tagline').value.trim();
+      const description = document.getElementById('m-description').value.trim();
+      const url = document.getElementById('m-url').value.trim();
+      if (!name || !tagline || !description) { status.textContent = 'Fill in name, tagline, and description.'; return; }
+      payload = { name, tagline, description, url };
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    status.textContent = 'AI is writing your launch copy...';
+
+    // Show loading state
+    renderLoading();
+
+    try {
+      const res = await fetch('/api/launch-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.error) {
+        status.textContent = 'Error: ' + data.error;
+        document.getElementById('platforms-wrap').innerHTML = `<div class="empty-platforms"><div class="big">⚠️</div>${data.error}</div>`;
+      } else {
+        renderCopy(data.copy);
+        status.textContent = '';
+      }
+    } catch(e) {
+      status.textContent = 'Network error — try again.';
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '✦ Generate Launch Copy';
+  }
+
+  function renderLoading() {
+    const platforms = [
+      { key: 'product_hunt', name: 'Product Hunt', icon: '🎯', cls: 'ph-icon', fields: ['title','tagline','first_comment'] },
+      { key: 'reddit',       name: 'Reddit',       icon: '🤖', cls: 'rdt-icon', fields: ['title','body'] },
+      { key: 'twitter_x',    name: 'X / Twitter',  icon: '✕',  cls: 'x-icon',  fields: ['tweet'] },
+      { key: 'indie_hackers', name: 'Indie Hackers', icon: '⚡', cls: 'ih-icon', fields: ['title','body'] },
+    ];
+    document.getElementById('platforms-wrap').innerHTML = `<div class="platforms">${
+      platforms.map(p => `
+        <div class="platform-card">
+          <div class="platform-header">
+            <div class="platform-left">
+              <div class="platform-icon ${p.cls}">${p.icon}</div>
+              <div><div class="platform-name">${p.name}</div></div>
+            </div>
+          </div>
+          <div class="platform-body">
+            <div class="copy-field-text loading">Generating...</div>
+          </div>
+        </div>`).join('')
+    }</div>`;
+  }
+
+  function renderCopy(copy) {
+    const platforms = [
+      {
+        key: 'product_hunt', name: 'Product Hunt', icon: '🎯', cls: 'ph-icon',
+        sub: 'Title · Tagline · First Comment',
+        fields: [
+          { label: 'Title',          key: 'title' },
+          { label: 'Tagline',        key: 'tagline' },
+          { label: 'First Comment',  key: 'first_comment' },
+        ]
+      },
+      {
+        key: 'reddit', name: 'Reddit — r/SideProject', icon: '🤖', cls: 'rdt-icon',
+        sub: 'Title · Post Body',
+        fields: [
+          { label: 'Title', key: 'title' },
+          { label: 'Post',  key: 'body' },
+        ]
+      },
+      {
+        key: 'twitter_x', name: 'X / Twitter', icon: '✕', cls: 'x-icon',
+        sub: 'Tweet',
+        fields: [
+          { label: 'Tweet', key: 'tweet' },
+        ]
+      },
+      {
+        key: 'indie_hackers', name: 'Indie Hackers', icon: '⚡', cls: 'ih-icon',
+        sub: 'Title · Post Body',
+        fields: [
+          { label: 'Title', key: 'title' },
+          { label: 'Post',  key: 'body' },
+        ]
+      },
+    ];
+
+    document.getElementById('platforms-wrap').innerHTML = `<div class="platforms">${
+      platforms.map(p => {
+        const pData = copy[p.key] || {};
+        return `
+        <div class="platform-card has-content">
+          <div class="platform-header">
+            <div class="platform-left">
+              <div class="platform-icon ${p.cls}">${p.icon}</div>
+              <div>
+                <div class="platform-name">${p.name}</div>
+                <div class="platform-sub">${p.sub}</div>
+              </div>
+            </div>
+          </div>
+          <div class="platform-body">
+            ${p.fields.map(f => {
+              const val = pData[f.key] || '';
+              return `
+              <div class="copy-field">
+                <div class="copy-field-label">
+                  <span>${f.label}</span>
+                  <button class="copy-btn" onclick="copyField(this, ${JSON.stringify(val)})">Copy</button>
+                </div>
+                <div class="copy-field-text">${esc(val)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }).join('')
+    }</div>`;
+  }
+
+  function copyField(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1800);
+    });
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+</script>
+</body>
+</html>

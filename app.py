@@ -307,6 +307,101 @@ def api_submit():
     })
 
 
+@app.route("/launch-copy")
+def launch_copy_page():
+    # Pass approved products for the dropdown
+    with get_db() as conn:
+        products = conn.execute(
+            "SELECT id, name, tagline, description, url FROM products WHERE status='approved' ORDER BY approved_at DESC"
+        ).fetchall()
+    return render_template("launch_copy.html", products=products)
+
+
+@app.route("/api/launch-copy", methods=["POST"])
+def api_launch_copy():
+    data = request.json or {}
+    product_id = data.get("product_id", "").strip()
+
+    # Load product from DB or use submitted data
+    if product_id:
+        with get_db() as conn:
+            row = conn.execute("SELECT * FROM products WHERE id=?", (product_id,)).fetchone()
+        if not row:
+            return jsonify({"error": "Product not found"}), 404
+        name        = row["name"]
+        tagline     = row["tagline"]
+        description = row["description"]
+        url         = row["url"]
+    else:
+        name        = data.get("name", "").strip()
+        tagline     = data.get("tagline", "").strip()
+        description = data.get("description", "").strip()
+        url         = data.get("url", "").strip()
+        if not all([name, tagline, description]):
+            return jsonify({"error": "Need name, tagline, and description"}), 400
+
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+    prompt = f"""You are a launch copywriter for indie software makers. Generate launch copy for this product across 4 platforms.
+
+Product: {name}
+Tagline: {tagline}
+Description: {description}
+URL: {url}
+
+Write copy for each platform. Match each platform's tone exactly.
+
+PRODUCT_HUNT:
+- Title (under 60 chars): punchy, benefit-first, no "introducing"
+- Tagline (under 100 chars): what it does, not what it is
+- First comment (150-200 words): maker's story — why you built it, what problem it solves, what makes it different. Conversational, honest, no hype.
+
+REDDIT (for r/SideProject):
+- Title (under 120 chars): "[I built X] — one line of what it does"
+- Post body (100-150 words): casual, builder-to-builder tone. What you built, why, what makes it work, link at end. No marketing speak.
+
+TWITTER_X:
+- Tweet (under 280 chars): hook first, then what it does, then URL. Can use line breaks. No hashtag spam — max 2 relevant tags.
+
+INDIE_HACKERS:
+- Title (under 100 chars): "Show IH: [product]" format
+- Post body (120-180 words): metrics if any, honest about where it is, what you learned building it, asking for feedback. IH loves transparency.
+
+Respond in this exact JSON format:
+{{
+  "product_hunt": {{
+    "title": "...",
+    "tagline": "...",
+    "first_comment": "..."
+  }},
+  "reddit": {{
+    "title": "...",
+    "body": "..."
+  }},
+  "twitter_x": {{
+    "tweet": "..."
+  }},
+  "indie_hackers": {{
+    "title": "...",
+    "body": "..."
+  }}
+}}"""
+
+    try:
+        msg = client.messages.create(
+            model="claude-sonnet-4-5",
+            max_tokens=1500,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        text = msg.content[0].text.strip()
+        match = re.search(r'\{.*\}', text, re.DOTALL)
+        if match:
+            return jsonify({"copy": json.loads(match.group())})
+        return jsonify({"error": "Could not parse response"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/guide")
 def guide():
     return render_template("guide.html")
