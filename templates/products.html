@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check'd — Products</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #080a0f;
+    --bg2:     #0e1118;
+    --bg3:     #141820;
+    --border:  rgba(255,255,255,0.07);
+    --text:    #e8eaf0;
+    --muted:   rgba(232,234,240,0.45);
+    --accent:  #00d4ff;
+    --accent2: #7c3aed;
+    --green:   #22c55e;
+    --mono:    'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,10,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 56px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+  }
+  .logo-text { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .logo-text span { color: var(--accent); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.2s; text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; box-shadow: 0 0 20px rgba(0,212,255,0.2);
+  }
+  .btn-primary:hover { box-shadow: 0 0 30px rgba(0,212,255,0.4); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 48px 40px 32px;
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .page-header h1 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--text) 0%, rgba(232,234,240,0.6) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .total-badge {
+    font-family: var(--mono); font-size: 12px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 99px; padding: 5px 14px;
+    white-space: nowrap;
+  }
+
+  /* ── FILTERS ── */
+  .filters {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 40px 28px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: 6px 16px; border-radius: 99px;
+    font-size: 12px; font-weight: 500; font-family: var(--mono);
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); cursor: pointer; transition: all 0.2s;
+    text-decoration: none;
+  }
+  .filter-pill:hover, .filter-pill.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+
+  /* ── BANNER LIST ── */
+  .banner-list {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 40px 80px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .banner {
+    display: grid;
+    grid-template-columns: 280px 1fr auto;
+    gap: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.25s;
+    position: relative;
+  }
+  .banner:hover {
+    border-color: rgba(0,212,255,0.25);
+    box-shadow: 0 0 0 1px rgba(0,212,255,0.1), 0 8px 40px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+  }
+  .banner::before {
+    content: '';
+    position: absolute;
+    inset: 0; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .banner:hover::before { opacity: 1; }
+
+  /* Screenshot panel */
+  .banner-img {
+    width: 280px; min-height: 160px;
+    object-fit: cover;
+    border-right: 1px solid var(--border);
+    display: block;
+  }
+  .banner-img-placeholder {
+    width: 280px; min-height: 160px;
+    background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 100%);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 8px;
+  }
+  .banner-letter {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800; color: #fff;
+    box-shadow: 0 0 30px rgba(0,212,255,0.3);
+  }
+
+  /* Content panel */
+  .banner-content {
+    padding: 24px 28px;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 10px; min-width: 0;
+  }
+  .banner-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .banner-name {
+    font-size: 20px; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--text);
+  }
+  .banner-checkd {
+    font-size: 10px; font-family: var(--mono);
+    color: var(--green);
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 4px; padding: 2px 8px;
+    letter-spacing: 0.08em;
+  }
+  .banner-category {
+    font-size: 10px; font-family: var(--mono);
+    color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 4px; padding: 2px 8px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .banner-tagline {
+    font-size: 15px; font-weight: 500;
+    color: rgba(232,234,240,0.8);
+    font-style: italic;
+  }
+  .banner-desc {
+    font-size: 13px; color: var(--muted);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .banner-meta {
+    display: flex; align-items: center; gap: 20px;
+    margin-top: 4px;
+  }
+  .banner-stat {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-family: var(--mono); color: var(--muted);
+  }
+  .banner-maker {
+    font-size: 12px; color: var(--muted);
+    font-family: var(--mono);
+  }
+  .banner-maker span { color: rgba(232,234,240,0.6); }
+
+  /* CTA panel */
+  .banner-cta {
+    padding: 24px 28px 24px 0;
+    display: flex; flex-direction: column;
+    align-items: flex-end; justify-content: center;
+    gap: 12px; min-width: 140px;
+  }
+  .btn-use {
+    padding: 10px 22px; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap;
+    box-shadow: 0 0 20px rgba(0,212,255,0.15);
+  }
+  .btn-use:hover {
+    box-shadow: 0 0 30px rgba(0,212,255,0.4);
+    transform: translateY(-1px);
+  }
+  .banner-date {
+    font-size: 11px; font-family: var(--mono);
+    color: var(--muted); opacity: 0.6;
+    white-space: nowrap;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 100px 32px; color: var(--muted); }
+  .empty-icon { font-size: 52px; margin-bottom: 20px; }
+  .empty-title { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .empty-sub { font-size: 14px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 32px; text-align: center;
+    font-size: 12px; color: var(--muted); font-family: var(--mono);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .banner { grid-template-columns: 1fr; }
+    .banner-img, .banner-img-placeholder { width: 100%; min-height: 180px; border-right: none; border-bottom: 1px solid var(--border); }
+    .banner-cta { flex-direction: row; padding: 0 20px 20px; }
+    .page-header, .filters, .banner-list { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="/">
+    <div class="logo-mark">✓</div>
+    <span class="logo-text">Check<span>'d</span></span>
+  </a>
+  <div class="topbar-right">
+    <a class="btn btn-ghost" href="/">← Home</a>
+    <button class="btn btn-primary" onclick="window.location='/?submit=1'">+ Submit Product</button>
+  </div>
+</header>
+
+<div class="page-header">
+  <div>
+    <h1>Every product here is <span>Check'd.</span></h1>
+    <p style="color:var(--muted);font-size:14px;margin-top:8px">AI-verified before listing. No upvotes. No pay-to-play.</p>
+  </div>
+  <div class="total-badge">{{ total }} product{% if total != 1 %}s{% endif %} listed</div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+  <a class="filter-pill {% if not active_category %}active{% endif %}" href="/products">All</a>
+  <a class="filter-pill {% if active_category=='dev-tools' %}active{% endif %}" href="/products?category=dev-tools">Dev Tools</a>
+  <a class="filter-pill {% if active_category=='ai' %}active{% endif %}" href="/products?category=ai">AI</a>
+  <a class="filter-pill {% if active_category=='productivity' %}active{% endif %}" href="/products?category=productivity">Productivity</a>
+  <a class="filter-pill {% if active_category=='finance' %}active{% endif %}" href="/products?category=finance">Finance</a>
+  <a class="filter-pill {% if active_category=='design' %}active{% endif %}" href="/products?category=design">Design</a>
+  <a class="filter-pill {% if active_category=='music' %}active{% endif %}" href="/products?category=music">Music</a>
+  <a class="filter-pill {% if active_category=='other' %}active{% endif %}" href="/products?category=other">Other</a>
+</div>
+
+<!-- Banner list -->
+<div class="banner-list">
+  {% for p in products %}
+  <div class="banner" id="card-{{ p.id }}">
+
+    {% if p.screenshot %}
+      <img class="banner-img" src="{{ p.screenshot }}" alt="{{ p.name }}">
+    {% else %}
+      <div class="banner-img-placeholder">
+        <div class="banner-letter">{{ p.name[0].upper() }}</div>
+      </div>
+    {% endif %}
+
+    <div class="banner-content">
+      <div class="banner-top">
+        <span class="banner-name">{{ p.name }}</span>
+        <span class="banner-checkd">✓ check'd</span>
+        <span class="banner-category">{{ p.category }}</span>
+      </div>
+      <div class="banner-tagline">"{{ p.tagline }}"</div>
+      <div class="banner-desc">{{ p.description }}</div>
+      <div class="banner-meta">
+        <span class="banner-stat">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          {{ p.views }} views
+        </span>
+        <span class="banner-stat">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          {{ p.uses }} uses
+        </span>
+        <span class="banner-maker">by <span>{{ p.maker_name }}</span></span>
+      </div>
+    </div>
+
+    <div class="banner-cta">
+      <button class="btn-use" onclick="useProduct('{{ p.id }}', '{{ p.url }}')">Use It →</button>
+      <div class="banner-date">{{ p.approved_at[:10] if p.approved_at else '' }}</div>
+    </div>
+
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="empty-icon">🚀</div>
+    <div class="empty-title">Nothing here yet.</div>
+    <div class="empty-sub">Be the first to submit. It's free.</div>
+  </div>
+  {% endfor %}
+</div>
+
+<footer class="footer">
+  <a href="https://creativekonsoles.com">Creative Konsoles</a> &nbsp;·&nbsp;
+  checked.creativekonsoles.com &nbsp;·&nbsp;
+  Every product verified by AI before listing
+</footer>
+
+<script>
+  async function useProduct(id, url) {
+    try { await fetch('/api/use/' + id, { method: 'POST' }); } catch {}
+    window.open(url, '_blank');
+    const card = document.getElementById('card-' + id);
+    if (card) {
+      const stats = card.querySelectorAll('.banner-stat');
+      if (stats[1]) stats[1].innerHTML = stats[1].innerHTML.replace(/\d+ uses/, n => {
+        const num = parseInt(n) || 0; return (num + 1) + ' uses';
+      });
+    }
+  }
+</script>
+</body>
+</html>
