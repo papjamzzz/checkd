@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check'd — AI-Vetted Product Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #080a0f;
+    --bg2:       #0e1118;
+    --bg3:       #141820;
+    --border:    rgba(255,255,255,0.07);
+    --text:      #e8eaf0;
+    --muted:     rgba(232,234,240,0.45);
+    --accent:    #00d4ff;
+    --accent2:   #7c3aed;
+    --green:     #22c55e;
+    --red:       #ef4444;
+    --gold:      #f59e0b;
+    --card-bg:   #0e1118;
+    --card-hover:#131922;
+    --radius:    10px;
+    --mono:      'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,10,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 56px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+  }
+  .logo-text {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .logo-text span { color: var(--accent); }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--text); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0,212,255,0.2);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,212,255,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 72px 32px 56px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 24px;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(36px, 5.5vw, 58px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 36px;
+    line-height: 1.65;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 52px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 64px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+  }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .how-step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+  }
+  .step-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+  /* ── FILTERS ── */
+  .filters-row {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: 5px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--mono);
+  }
+  .filter-pill:hover, .filter-pill.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+
+  /* ── PRODUCT GRID ── */
+  .products-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .product-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--bg3), var(--bg2));
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .card-meta { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-tagline {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-stats {
+    display: flex;
+    gap: 14px;
+  }
+  .card-stat {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+  .card-stat svg { opacity: 0.5; }
+
+  .card-category {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .btn-use {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-use:hover {
+    box-shadow: 0 0 16px rgba(0,212,255,0.3);
+    transform: translateY(-1px);
+  }
+
+  .checkd-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--green);
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 4px;
+    padding: 2px 7px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── SUBMIT MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 36px;
+  }
+  .modal-header {
+    margin-bottom: 28px;
+  }
+  .modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .modal-sub { font-size: 13px; color: var(--muted); }
+
+  .form-group { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 7px;
+    font-family: var(--mono);
+  }
+  input, textarea, select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  select option { background: var(--bg3); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .submit-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .btn-submit {
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── VERDICT SCREEN ── */
+  .verdict-wrap {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .verdict-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+  }
+  .verdict-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .verdict-title.approved { color: var(--green); }
+  .verdict-title.rejected { color: var(--red); }
+  .verdict-reason {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 360px;
+    margin: 0 auto 24px;
+  }
+  .verdict-ai-note {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    opacity: 0.6;
+    margin-top: 16px;
+  }
+
+  /* ── VALIDATION SPINNER ── */
+  .validating-wrap {
+    text-align: center;
+    padding: 40px 0;
+  }
+  .spinner-ring {
+    width: 52px; height: 52px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .validating-text {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .validating-sub {
+    font-size: 12px;
+    color: var(--muted);
+    opacity: 0.6;
+    margin-top: 8px;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 32px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .empty-sub { font-size: 14px; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .topbar { padding: 0 16px; }
+    .hero { padding: 48px 20px 40px; }
+    .how-steps { grid-template-columns: 1fr; }
+    .products-wrap, .filters-row { padding-left: 16px; padding-right: 16px; }
+    .modal { padding: 24px; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="topbar">
+  <a class="logo" href="/">
+    <div class="logo-mark">✓</div>
+    <span class="logo-text">Check<span>'d</span></span>
+  </a>
+  <div class="topbar-right">
+    <a class="nav-link" href="https://creativekonsoles.com" target="_blank">by Creative Konsoles</a>
+    <button class="btn btn-primary" onclick="openSubmit()">+ Submit Product</button>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">AI-VETTED · FREE FOREVER · NO VOTING</div>
+  <h1>Only <span>real products</span><br>make it here.</h1>
+  <p class="hero-sub">
+    Every submission is validated by AI before it goes live.
+    No upvote manipulation. No pay-to-play. Just software that actually works.
+  </p>
+  <div class="hero-cta">
+    <button class="btn btn-primary" onclick="openSubmit()">Submit Your Product — Free</button>
+    <a class="btn btn-ghost" href="#products">Browse Products</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num" id="stat-total">{{ total }}</div>
+      <div class="stat-label">Products Listed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">$0</div>
+      <div class="stat-label">Cost to List</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">AI Checks Per Submission</div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how">
+  <div class="section-label">// how it works</div>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="step-num">01 —</div>
+      <div class="step-title">Submit Your Product</div>
+      <div class="step-desc">Fill out a short form. Name, tagline, description, live URL. Takes 2 minutes. Free, always.</div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02 —</div>
+      <div class="step-title">AI Validates It</div>
+      <div class="step-desc">Our AI checks that it's a real, working product with genuine use. No vaporware. No clones. No filler.</div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03 —</div>
+      <div class="step-title">It Goes Live</div>
+      <div class="step-desc">Approved products are listed instantly. Discovery is by views and actual usage — not popularity contests.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="filters-row" id="products">
+  <button class="filter-pill active" onclick="filterCategory('')" data-cat="">All</button>
+  <button class="filter-pill" onclick="filterCategory('dev-tools')" data-cat="dev-tools">Dev Tools</button>
+  <button class="filter-pill" onclick="filterCategory('ai')" data-cat="ai">AI</button>
+  <button class="filter-pill" onclick="filterCategory('productivity')" data-cat="productivity">Productivity</button>
+  <button class="filter-pill" onclick="filterCategory('finance')" data-cat="finance">Finance</button>
+  <button class="filter-pill" onclick="filterCategory('design')" data-cat="design">Design</button>
+  <button class="filter-pill" onclick="filterCategory('music')" data-cat="music">Music</button>
+  <button class="filter-pill" onclick="filterCategory('other')" data-cat="other">Other</button>
+</div>
+
+<!-- Products Grid -->
+<div class="products-wrap">
+  <div class="products-grid" id="products-grid">
+    {% for p in products %}
+    <div class="product-card" id="card-{{ p.id }}">
+      <span class="checkd-badge">✓ check'd</span>
+      <div class="card-top">
+        <div class="card-icon">{{ p.name[0].upper() }}</div>
+        <div class="card-meta">
+          <div class="card-name">{{ p.name }}</div>
+          <div class="card-tagline">{{ p.tagline }}</div>
+        </div>
+      </div>
+      <div class="card-desc">{{ p.description }}</div>
+      <div class="card-footer">
+        <div class="card-stats">
+          <span class="card-stat">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            {{ p.views }}
+          </span>
+          <span class="card-stat">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            {{ p.uses }}
+          </span>
+        </div>
+        <button class="btn-use" onclick="useProduct('{{ p.id }}', '{{ p.url }}')">Use It →</button>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🚀</div>
+      <div class="empty-title">No products yet.</div>
+      <div class="empty-sub">Be the first to submit. It's free.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Submit Modal -->
+<div class="modal-overlay" id="submit-modal">
+  <div class="modal">
+
+    <!-- Form -->
+    <div id="submit-form-wrap">
+      <div class="modal-header">
+        <div class="modal-title">Submit Your Product</div>
+        <div class="modal-sub">Free. No account needed. AI validates before listing.</div>
+      </div>
+      <form id="submit-form" onsubmit="submitProduct(event)">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="f-name" placeholder="e.g. StreamFader" required maxlength="60">
+        </div>
+        <div class="form-group">
+          <label>Tagline</label>
+          <input type="text" id="f-tagline" placeholder="One line — what it does" required maxlength="100">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="f-description" placeholder="Tell us what it actually does and who it's for. Be specific." required maxlength="500"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Live URL</label>
+          <input type="url" id="f-url" placeholder="https://yourproduct.com" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select id="f-category" required>
+              <option value="">Select...</option>
+              <option value="dev-tools">Dev Tools</option>
+              <option value="ai">AI</option>
+              <option value="productivity">Productivity</option>
+              <option value="finance">Finance</option>
+              <option value="design">Design</option>
+              <option value="music">Music</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="f-maker-name" placeholder="Maker name" required maxlength="60">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Your Email (private, never shown)</label>
+          <input type="email" id="f-maker-email" placeholder="you@example.com" required>
+        </div>
+        <div class="submit-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeSubmit()">Cancel</button>
+          <button type="submit" class="btn-submit" id="btn-submit">Submit for Validation →</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Validating -->
+    <div id="validating-wrap" style="display:none">
+      <div class="validating-wrap">
+        <div class="spinner-ring"></div>
+        <div class="validating-text">AI is checking your product...</div>
+        <div class="validating-sub">Verifying it's real, working, and genuinely useful.</div>
+      </div>
+    </div>
+
+    <!-- Verdict -->
+    <div id="verdict-wrap" style="display:none">
+      <div class="verdict-wrap">
+        <div class="verdict-icon" id="verdict-icon"></div>
+        <div class="verdict-title" id="verdict-title"></div>
+        <div class="verdict-reason" id="verdict-reason"></div>
+        <button class="btn btn-primary" id="verdict-btn" onclick="closeSubmit()">Done</button>
+        <div class="verdict-ai-note">Validated by Claude AI · Check'd</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <a href="https://creativekonsoles.com">Creative Konsoles</a> &nbsp;·&nbsp;
+  checked.creativekonsoles.com &nbsp;·&nbsp;
+  <span>Every product verified by AI before listing</span>
+</footer>
+
+<script>
+  const CATEGORIES = {
+    'dev-tools': 'Dev Tools',
+    'ai': 'AI',
+    'productivity': 'Productivity',
+    'finance': 'Finance',
+    'design': 'Design',
+    'music': 'Music',
+    'other': 'Other'
+  };
+
+  // ── Modal ──────────────────────────────────────────────────────────────────
+  function openSubmit() {
+    document.getElementById('submit-modal').classList.add('open');
+    showFormView();
+  }
+  function closeSubmit() {
+    document.getElementById('submit-modal').classList.remove('open');
+    document.getElementById('submit-form').reset();
+    showFormView();
+  }
+
+  document.getElementById('submit-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeSubmit();
+  });
+
+  function showFormView() {
+    document.getElementById('submit-form-wrap').style.display = '';
+    document.getElementById('validating-wrap').style.display = 'none';
+    document.getElementById('verdict-wrap').style.display = 'none';
+    document.getElementById('btn-submit').disabled = false;
+    document.getElementById('btn-submit').textContent = 'Submit for Validation →';
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  async function submitProduct(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+
+    const payload = {
+      name:        document.getElementById('f-name').value.trim(),
+      tagline:     document.getElementById('f-tagline').value.trim(),
+      description: document.getElementById('f-description').value.trim(),
+      url:         document.getElementById('f-url').value.trim(),
+      category:    document.getElementById('f-category').value,
+      maker_name:  document.getElementById('f-maker-name').value.trim(),
+      maker_email: document.getElementById('f-maker-email').value.trim(),
+    };
+
+    // Show validating screen
+    document.getElementById('submit-form-wrap').style.display = 'none';
+    document.getElementById('validating-wrap').style.display = '';
+
+    try {
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      document.getElementById('validating-wrap').style.display = 'none';
+      document.getElementById('verdict-wrap').style.display = '';
+
+      if (data.error) {
+        document.getElementById('verdict-icon').textContent = '⚠️';
+        document.getElementById('verdict-title').textContent = 'Something went wrong';
+        document.getElementById('verdict-title').className = 'verdict-title rejected';
+        document.getElementById('verdict-reason').textContent = data.error;
+        document.getElementById('verdict-btn').textContent = 'Try Again';
+        document.getElementById('verdict-btn').onclick = showFormView;
+        return;
+      }
+
+      if (data.approved) {
+        document.getElementById('verdict-icon').textContent = '✅';
+        document.getElementById('verdict-title').textContent = 'Check\'d. You\'re live.';
+        document.getElementById('verdict-title').className = 'verdict-title approved';
+        document.getElementById('verdict-reason').textContent = data.reason;
+        document.getElementById('verdict-btn').textContent = 'View the Listing →';
+        document.getElementById('verdict-btn').onclick = () => { closeSubmit(); loadProducts(); };
+        // Update counter
+        const el = document.getElementById('stat-total');
+        if (el) el.textContent = parseInt(el.textContent || '0') + 1;
+      } else {
+        document.getElementById('verdict-icon').textContent = '❌';
+        document.getElementById('verdict-title').textContent = 'Not listed.';
+        document.getElementById('verdict-title').className = 'verdict-title rejected';
+        document.getElementById('verdict-reason').textContent = data.reason;
+        document.getElementById('verdict-btn').textContent = 'Fix It and Resubmit';
+        document.getElementById('verdict-btn').onclick = showFormView;
+      }
+
+    } catch (err) {
+      document.getElementById('validating-wrap').style.display = 'none';
+      document.getElementById('verdict-wrap').style.display = '';
+      document.getElementById('verdict-icon').textContent = '⚠️';
+      document.getElementById('verdict-title').textContent = 'Network error';
+      document.getElementById('verdict-title').className = 'verdict-title rejected';
+      document.getElementById('verdict-reason').textContent = 'Could not reach the server. Try again.';
+      document.getElementById('verdict-btn').textContent = 'Try Again';
+      document.getElementById('verdict-btn').onclick = showFormView;
+    }
+  }
+
+  // ── Use Product ────────────────────────────────────────────────────────────
+  async function useProduct(id, url) {
+    try { await fetch('/api/use/' + id, { method: 'POST' }); } catch {}
+    window.open(url, '_blank');
+    // Update use count in UI
+    const card = document.getElementById('card-' + id);
+    if (card) {
+      const stats = card.querySelectorAll('.card-stat');
+      if (stats[1]) {
+        const n = parseInt(stats[1].textContent.trim()) || 0;
+        stats[1].innerHTML = stats[1].innerHTML.replace(/\d+/, n + 1);
+      }
+    }
+  }
+
+  // ── Filters ────────────────────────────────────────────────────────────────
+  function filterCategory(cat) {
+    document.querySelectorAll('.filter-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.cat === cat);
+    });
+    loadProducts(cat);
+  }
+
+  async function loadProducts(cat = '') {
+    const grid = document.getElementById('products-grid');
+    try {
+      const res = await fetch('/api/products' + (cat ? '?category=' + cat : ''));
+      const products = await res.json();
+      if (!products.length) {
+        grid.innerHTML = `<div class="empty-state">
+          <div class="empty-icon">🚀</div>
+          <div class="empty-title">No products in this category yet.</div>
+          <div class="empty-sub">Be the first to submit. It's free.</div>
+        </div>`;
+        return;
+      }
+      grid.innerHTML = products.map(p => `
+        <div class="product-card" id="card-${p.id}">
+          <span class="checkd-badge">✓ check'd</span>
+          <div class="card-top">
+            <div class="card-icon">${p.name[0].toUpperCase()}</div>
+            <div class="card-meta">
+              <div class="card-name">${esc(p.name)}</div>
+              <div class="card-tagline">${esc(p.tagline)}</div>
+            </div>
+          </div>
+          <div class="card-desc">${esc(p.description)}</div>
+          <div class="card-footer">
+            <div class="card-stats">
+              <span class="card-stat">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                ${p.views}
+              </span>
+              <span class="card-stat">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                ${p.uses}
+              </span>
+            </div>
+            <button class="btn-use" onclick="useProduct('${p.id}', '${esc(p.url)}')">Use It →</button>
+          </div>
+        </div>
+      `).join('');
+    } catch {}
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+</script>
+</body>
+</html>
