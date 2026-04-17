@@ -745,14 +745,19 @@
       <div style="margin-bottom:20px">
         <div style="font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px">// quick fill a CK product</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px" id="quickfill-btns">
-          <button type="button" class="qf-btn" onclick="quickFill('streamfader')">StreamFader</button>
-          <button type="button" class="qf-btn" onclick="quickFill('5i')">5i</button>
-          <button type="button" class="qf-btn" onclick="quickFill('memoir')">Memoir</button>
-          <button type="button" class="qf-btn" onclick="quickFill('kodekeeper')">Kode Keeper</button>
-          <button type="button" class="qf-btn" onclick="quickFill('tracktracks')">Track Tracks</button>
-          <button type="button" class="qf-btn" onclick="quickFill('dawdoctor')">DAW Doctor</button>
-          <button type="button" class="qf-btn" onclick="quickFill('empathybot')">WithYou</button>
-          <button type="button" class="qf-btn" onclick="quickFill('checkd')">Check'd</button>
+          <button type="button" class="qf-btn" onclick="quickFill('streamfader',this)">StreamFader</button>
+          <button type="button" class="qf-btn" onclick="quickFill('5i',this)">5i</button>
+          <button type="button" class="qf-btn" onclick="quickFill('memoir',this)">Memoir</button>
+          <button type="button" class="qf-btn" onclick="quickFill('kodekeeper',this)">Kode Keeper</button>
+          <button type="button" class="qf-btn" onclick="quickFill('tracktracks',this)">Track Tracks</button>
+          <button type="button" class="qf-btn" onclick="quickFill('dawdoctor',this)">DAW Doctor</button>
+          <button type="button" class="qf-btn" onclick="quickFill('empathybot',this)">WithYou</button>
+          <button type="button" class="qf-btn" onclick="quickFill('checkd',this)">Check'd</button>
+        </div>
+        <!-- Copy panel — shown after quick fill -->
+        <div id="cc-panel" style="display:none;margin-top:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;display:none">
+          <div style="font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px">// copy fields</div>
+          <div style="display:flex;flex-direction:column;gap:7px" id="cc-rows"></div>
         </div>
       </div>
       <form id="submit-form" onsubmit="submitProduct(event)" autocomplete="off">
@@ -1107,7 +1112,7 @@
     }
   };
 
-  function quickFill(key) {
+  function quickFill(key, btn) {
     const p = CK_PRODUCTS[key];
     if (!p) return;
     document.getElementById('f-name').value        = p.name;
@@ -1116,12 +1121,45 @@
     document.getElementById('f-url').value         = p.url;
     document.getElementById('f-maker-name').value  = p.maker_name;
     document.getElementById('f-maker-email').value = p.maker_email;
-    // Reset screenshot preview
     document.getElementById('screenshot-preview').style.display = 'none';
     document.getElementById('f-screenshot').value = '';
-    // Highlight the button
+    // Highlight button
     document.querySelectorAll('.qf-btn').forEach(b => b.classList.remove('filled'));
-    event.target.classList.add('filled');
+    btn.classList.add('filled');
+    // Build copy panel
+    const panel = document.getElementById('cc-panel');
+    const rows  = document.getElementById('cc-rows');
+    const fields = [
+      { label: 'Name',        value: p.name },
+      { label: 'Tagline',     value: p.tagline },
+      { label: 'Description', value: p.description },
+      { label: 'URL',         value: p.url },
+    ];
+    rows.innerHTML = fields.map(f => `
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;min-width:72px;padding-top:2px">${f.label}</span>
+        <span style="font-size:12px;color:rgba(232,234,240,0.75);flex:1;line-height:1.5;word-break:break-word">${esc(f.value)}</span>
+        <button type="button" onclick="ccCopy(this, ${JSON.stringify(f.value)})"
+          style="flex-shrink:0;padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;font-family:var(--mono);background:var(--bg2);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all 0.2s;white-space:nowrap">
+          Copy
+        </button>
+      </div>
+    `).join('');
+    panel.style.display = 'block';
+  }
+
+  function ccCopy(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      btn.style.borderColor = 'var(--green)';
+      btn.style.color = 'var(--green)';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }, 1800);
+    });
   }
 
   function esc(str) {
