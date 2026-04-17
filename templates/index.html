@@ -740,22 +740,22 @@
         <div class="modal-title">Submit Your Product</div>
         <div class="modal-sub">Free. No account needed. AI validates before listing.</div>
       </div>
-      <form id="submit-form" onsubmit="submitProduct(event)">
+      <form id="submit-form" onsubmit="submitProduct(event)" autocomplete="off">
         <div class="form-group">
           <label>Product Name</label>
-          <input type="text" id="f-name" placeholder="e.g. StreamFader" required maxlength="60">
+          <input type="text" id="f-name" placeholder="e.g. StreamFader" required maxlength="60" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Tagline</label>
-          <input type="text" id="f-tagline" placeholder="One line — what it does" required maxlength="100">
+          <input type="text" id="f-tagline" placeholder="One line — what it does" required maxlength="100" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Description</label>
-          <textarea id="f-description" placeholder="Tell us what it actually does and who it's for. Be specific." required maxlength="500"></textarea>
+          <textarea id="f-description" placeholder="Tell us what it actually does and who it's for. Be specific." required maxlength="500" autocomplete="off"></textarea>
         </div>
         <div class="form-group">
           <label>Live URL</label>
-          <input type="url" id="f-url" placeholder="https://yourproduct.com" required>
+          <input type="url" id="f-url" placeholder="https://yourproduct.com" required autocomplete="off">
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -773,12 +773,12 @@
           </div>
           <div class="form-group">
             <label>Your Name</label>
-            <input type="text" id="f-maker-name" placeholder="Maker name" required maxlength="60">
+            <input type="text" id="f-maker-name" placeholder="Maker name" required maxlength="60" autocomplete="off">
           </div>
         </div>
         <div class="form-group">
           <label>Your Email (private, never shown)</label>
-          <input type="email" id="f-maker-email" placeholder="you@example.com" required>
+          <input type="email" id="f-maker-email" placeholder="you@example.com" required autocomplete="off">
         </div>
         <div class="form-group">
           <label>Screenshot <span style="opacity:0.5;font-size:10px">(optional)</span></label>
