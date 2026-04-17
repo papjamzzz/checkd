@@ -679,17 +679,6 @@
   </div>
 </section>
 
-<!-- Filters -->
-<div class="filters-row" id="products">
-  <button class="filter-pill active" onclick="filterCategory('')" data-cat="">All</button>
-  <button class="filter-pill" onclick="filterCategory('dev-tools')" data-cat="dev-tools">Dev Tools</button>
-  <button class="filter-pill" onclick="filterCategory('ai')" data-cat="ai">AI</button>
-  <button class="filter-pill" onclick="filterCategory('productivity')" data-cat="productivity">Productivity</button>
-  <button class="filter-pill" onclick="filterCategory('finance')" data-cat="finance">Finance</button>
-  <button class="filter-pill" onclick="filterCategory('design')" data-cat="design">Design</button>
-  <button class="filter-pill" onclick="filterCategory('music')" data-cat="music">Music</button>
-  <button class="filter-pill" onclick="filterCategory('other')" data-cat="other">Other</button>
-</div>
 
 <!-- Products Grid -->
 <div class="products-wrap">
@@ -757,24 +746,10 @@
           <label>Live URL</label>
           <input type="url" id="f-url" placeholder="https://yourproduct.com" required autocomplete="off">
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Category</label>
-            <select id="f-category" required>
-              <option value="">Select...</option>
-              <option value="dev-tools">Dev Tools</option>
-              <option value="ai">AI</option>
-              <option value="productivity">Productivity</option>
-              <option value="finance">Finance</option>
-              <option value="design">Design</option>
-              <option value="music">Music</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Your Name</label>
-            <input type="text" id="f-maker-name" placeholder="Maker name" required maxlength="60" autocomplete="off">
-          </div>
+        <input type="hidden" id="f-category" value="other">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="f-maker-name" placeholder="Maker name" required maxlength="60" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Your Email (private, never shown)</label>

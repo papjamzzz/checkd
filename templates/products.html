@@ -279,17 +279,6 @@
   <div class="total-badge">{{ total }} product{% if total != 1 %}s{% endif %} listed</div>
 </div>
 
-<!-- Filters -->
-<div class="filters">
-  <a class="filter-pill {% if not active_category %}active{% endif %}" href="/products">All</a>
-  <a class="filter-pill {% if active_category=='dev-tools' %}active{% endif %}" href="/products?category=dev-tools">Dev Tools</a>
-  <a class="filter-pill {% if active_category=='ai' %}active{% endif %}" href="/products?category=ai">AI</a>
-  <a class="filter-pill {% if active_category=='productivity' %}active{% endif %}" href="/products?category=productivity">Productivity</a>
-  <a class="filter-pill {% if active_category=='finance' %}active{% endif %}" href="/products?category=finance">Finance</a>
-  <a class="filter-pill {% if active_category=='design' %}active{% endif %}" href="/products?category=design">Design</a>
-  <a class="filter-pill {% if active_category=='music' %}active{% endif %}" href="/products?category=music">Music</a>
-  <a class="filter-pill {% if active_category=='other' %}active{% endif %}" href="/products?category=other">Other</a>
-</div>
 
 <!-- Banner list -->
 <div class="banner-list">
@@ -308,7 +297,6 @@
       <div class="banner-top">
         <span class="banner-name">{{ p.name }}</span>
         <span class="banner-checkd">✓ check'd</span>
-        <span class="banner-category">{{ p.category }}</span>
       </div>
       <div class="banner-tagline">"{{ p.tagline }}"</div>
       <div class="banner-desc">{{ p.description }}</div>
