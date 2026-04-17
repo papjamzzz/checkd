@@ -36,6 +36,15 @@ def init_db():
     os.makedirs(os.path.dirname(DB), exist_ok=True)
     with get_db() as conn:
         conn.execute("""
+            CREATE TABLE IF NOT EXISTS makers (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                email        TEXT UNIQUE NOT NULL,
+                name         TEXT,
+                first_seen   TEXT NOT NULL,
+                product_count INTEGER DEFAULT 1
+            )
+        """)
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id             TEXT PRIMARY KEY,
                 name           TEXT NOT NULL,
@@ -298,6 +307,17 @@ def api_submit():
             now,
             now if approved else None
         ))
+        conn.commit()
+
+    # Always capture the maker email — approved or not
+    with get_db() as conn:
+        conn.execute("""
+            INSERT INTO makers (email, name, first_seen, product_count)
+            VALUES (?, ?, ?, 1)
+            ON CONFLICT(email) DO UPDATE SET
+                product_count = product_count + 1,
+                name = COALESCE(excluded.name, name)
+        """, (email, data["maker_name"].strip(), now))
         conn.commit()
 
     return jsonify({
