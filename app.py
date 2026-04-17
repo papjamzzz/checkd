@@ -307,6 +307,14 @@ def api_submit():
     })
 
 
+@app.route("/guide")
+def guide():
+    return render_template("guide.html")
+
+@app.route("/support")
+def support():
+    return render_template("support.html")
+
 @app.route("/api/use/<product_id>", methods=["POST"])
 def track_use(product_id):
     with get_db() as conn:
