@@ -555,6 +555,15 @@
     border: 1px solid var(--border);
   }
 
+  /* ── QUICK FILL BUTTONS ── */
+  .qf-btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: var(--mono);
+  }
+  .qf-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.06); }
+  .qf-btn.filled { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.06); }
+
   /* ── VALIDATION SPINNER ── */
   .validating-wrap {
     text-align: center;
@@ -730,6 +739,21 @@
       <div class="modal-header">
         <div class="modal-title">Submit Your Product</div>
         <div class="modal-sub">Free. No account needed. AI validates before listing.</div>
+      </div>
+
+      <!-- Quick-fill CK products -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px">// quick fill a CK product</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px" id="quickfill-btns">
+          <button type="button" class="qf-btn" onclick="quickFill('streamfader')">StreamFader</button>
+          <button type="button" class="qf-btn" onclick="quickFill('5i')">5i</button>
+          <button type="button" class="qf-btn" onclick="quickFill('memoir')">Memoir</button>
+          <button type="button" class="qf-btn" onclick="quickFill('kodekeeper')">Kode Keeper</button>
+          <button type="button" class="qf-btn" onclick="quickFill('tracktracks')">Track Tracks</button>
+          <button type="button" class="qf-btn" onclick="quickFill('dawdoctor')">DAW Doctor</button>
+          <button type="button" class="qf-btn" onclick="quickFill('empathybot')">WithYou</button>
+          <button type="button" class="qf-btn" onclick="quickFill('checkd')">Check'd</button>
+        </div>
       </div>
       <form id="submit-form" onsubmit="submitProduct(event)" autocomplete="off">
         <div class="form-group">
@@ -1013,6 +1037,91 @@
         </div>
       `).join('');
     } catch {}
+  }
+
+  // ── Quick Fill ─────────────────────────────────────────────────────────────
+  const CK_PRODUCTS = {
+    streamfader: {
+      name: 'StreamFader',
+      tagline: 'Slide between critic scores and audience scores to find what\'s worth watching.',
+      description: 'StreamFader is a streaming content ranker with a DJ-style crossfader. Drag the slider left for critic consensus, right for audience opinion — the ranked list updates in real time. No algorithm deciding for you. No endless scrolling. Just a single control that surfaces what matches how you actually watch.',
+      url: 'https://stream.creativekonsoles.com',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    '5i': {
+      name: '5i — Five Intelligences',
+      tagline: 'Five AI models answer at once. The truth lives in the overlap.',
+      description: '5i runs your question through GPT, DeepSeek, Gemini, Grok, and Mistral simultaneously, then synthesizes a consensus answer. Where models agree, you get confidence. Where they disagree, you get the full picture. No single model bias. No guessing which AI to use. Just parallel intelligence, distilled into one answer.',
+      url: 'https://5i.creativekonsoles.com',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    memoir: {
+      name: 'Memoir',
+      tagline: 'Speak your memories. AI turns them into code that tells your story.',
+      description: 'Memoir is a voice-first memoir tool. You speak memories into a microphone, Whisper transcribes them, and Claude weaves them into poetic Python code — where a class is a phase of life, a def is a moment, and a try/except is survival. Your story runs. It lives. It\'s yours.',
+      url: 'http://127.0.0.1:5565',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    kodekeeper: {
+      name: 'Kode Keeper',
+      tagline: 'Mission control for Claude Code — context, costs, and project health in one dashboard.',
+      description: 'Kode Keeper is a real-time dashboard for developers using Claude Code. Monitor token usage with a live oscilloscope, track API costs with VU meters, check git status across all projects, and call on Claude directly from the UI. Built for builders who ship fast and need to stay oriented.',
+      url: 'https://keeper.creativekonsoles.com',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    tracktracks: {
+      name: 'Track Tracks',
+      tagline: 'See which Ableton tracks are killing your CPU before your session crashes.',
+      description: 'Track Tracks monitors CPU usage per track in Ableton Live in real time. No more mystery dropouts or audio glitches. See exactly which instrument or effect is eating your processing power and fix it before your session dies mid-session.',
+      url: 'https://github.com/papjamzzz/Track-Tracks',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    dawdoctor: {
+      name: 'DAW Doctor',
+      tagline: 'Diagnose and fix Ableton Live crashes, plugin errors, and performance issues.',
+      description: 'DAW Doctor runs a full diagnostic on your Ableton Live installation — scanning for broken plugins, corrupt samples, and system bottlenecks. Get a clear report of what\'s wrong and exactly how to fix it. Built for producers who can\'t afford to lose a session.',
+      url: 'https://github.com/papjamzzz/Daw-Doctor',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    empathybot: {
+      name: 'WithYou',
+      tagline: 'An AI voice companion for emotional support — 12 support types, fully voice-first.',
+      description: 'WithYou is a voice-first AI companion built for emotional support. Choose from 12 support types — coaching, venting, grief, anxiety, and more. Speak freely, get heard. Powered by Whisper STT, Gemini AI, and ElevenLabs TTS for a full voice loop that feels human.',
+      url: 'https://web-production-ac123.up.railway.app',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    },
+    checkd: {
+      name: 'Check\'d',
+      tagline: 'The product directory where AI decides what gets in — not upvotes.',
+      description: 'Check\'d is a free product discovery platform for indie makers and software builders. Every submission is validated by AI before it goes live — no vaporware, no clones, no filler. Discovery is driven by views and actual usage, not popularity contests or paid placement. Submit your product in 2 minutes. If it\'s real and it works, it\'s in.',
+      url: 'https://checked.creativekonsoles.com',
+      maker_name: 'Creative Konsoles',
+      maker_email: 'jeremiah@creativekonsoles.com'
+    }
+  };
+
+  function quickFill(key) {
+    const p = CK_PRODUCTS[key];
+    if (!p) return;
+    document.getElementById('f-name').value        = p.name;
+    document.getElementById('f-tagline').value     = p.tagline;
+    document.getElementById('f-description').value = p.description;
+    document.getElementById('f-url').value         = p.url;
+    document.getElementById('f-maker-name').value  = p.maker_name;
+    document.getElementById('f-maker-email').value = p.maker_email;
+    // Reset screenshot preview
+    document.getElementById('screenshot-preview').style.display = 'none';
+    document.getElementById('f-screenshot').value = '';
+    // Highlight the button
+    document.querySelectorAll('.qf-btn').forEach(b => b.classList.remove('filled'));
+    event.target.classList.add('filled');
   }
 
   function esc(str) {
