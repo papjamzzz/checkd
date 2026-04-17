@@ -14,7 +14,7 @@ No voting. No pay-to-play. Views + uses are the only metrics.
 ## Stack
 - Flask + SQLite
 - Anthropic API (Claude) for validation
-- Subdomain: checked.creativekonsoles.com
+- Subdomain: checkd.creativekonsoles.com
 
 ## How Validation Works
 On submit → POST /api/submit → validate_with_ai() → Claude checks:
@@ -35,6 +35,6 @@ Built 2026-04-17. Ready to deploy to Railway.
 ## Next Steps
 - [ ] Deploy to Railway
 - [ ] Set ANTHROPIC_API_KEY on Railway
-- [ ] Add checked.creativekonsoles.com subdomain
+- [ ] Add checkd.creativekonsoles.com subdomain
 - [ ] Submit 5i and other CK products as seed listings
 - [ ] Post on Reddit (r/SideProject, r/Entrepreneur) + Product Hunt comments
